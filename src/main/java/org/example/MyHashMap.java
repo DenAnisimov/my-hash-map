@@ -1,6 +1,10 @@
 package org.example;
 
+import java.util.logging.Logger;
+
 public class MyHashMap<K, V> {
+    private final static Logger LOGGER = Logger.getLogger(MyHashMap.class.getName());
+
     private final int CAPACITY = 16;
     private final float LOAD_FACTOR = 0.75f;
 
@@ -9,11 +13,15 @@ public class MyHashMap<K, V> {
     private int threshold;
 
     public MyHashMap() {
+        LOGGER.info("HashMap was created");
+
         this.table = new MyNode[CAPACITY];
         this.threshold = (int) (CAPACITY * LOAD_FACTOR);
     }
 
     private int hash(Object key) {
+        LOGGER.info("Method hash worked");
+
         int h;
         if (key == null) {
             return 0;
@@ -23,24 +31,31 @@ public class MyHashMap<K, V> {
 
             h = h & table.length - 1;
 
+            LOGGER.info("Bucket was calculated for the Object: " + h);
+
             return h;
         }
     }
 
     public void put(K key, V value) {
+        LOGGER.info("Method put worked");
+
         int h = hash(key);
         MyNode<K, V> node = new MyNode<>(key, value);
 
         if (table[h] == null) {
             table[h] = node;
+            LOGGER.info("Object was added to the Bucket");
         } else {
             MyNode<K, V> current = table[h];
 
             while (current != null) {
                 if (current.getKey().equals(key)) {
+                    LOGGER.info("Value was changed from " + current.getValue() + " to " + value);
                     current.setValue(value);
                 }
                 if (current.getNext() == null) {
+                    LOGGER.warning("Collision: Object already exists in the Bucket");
                     current.setNext(node);
                 }
                 current = current.getNext();
@@ -53,10 +68,12 @@ public class MyHashMap<K, V> {
     }
 
     public V get(K key) {
+        LOGGER.info("Method get worked");
         int h = hash(key);
         MyNode<K, V> node = table[h];
         while (node != null) {
             if (key.equals(node.getKey())) {
+                LOGGER.info("Value was found: " + node.getValue());
                 return node.getValue();
             }
             node = node.getNext();
@@ -65,6 +82,7 @@ public class MyHashMap<K, V> {
     }
 
     public void resize() {
+        LOGGER.info("Method resize worked");
         int newCapacity = table.length * 2;
         threshold = (int) (newCapacity * LOAD_FACTOR);
         MyNode<K, V>[] newTable = new MyNode[newCapacity];
