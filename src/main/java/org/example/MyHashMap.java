@@ -81,7 +81,7 @@ public class MyHashMap<K, V> {
         return null;
     }
 
-    public void resize() {
+    private void resize() {
         LOGGER.info("Method resize worked");
         int newCapacity = table.length * 2;
         threshold = (int) (newCapacity * LOAD_FACTOR);
