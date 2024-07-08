@@ -53,10 +53,13 @@ public class MyHashMap<K, V> {
                 if (current.getKey().equals(key)) {
                     LOGGER.info("Value was changed from " + current.getValue() + " to " + value);
                     current.setValue(value);
+                    return;
                 }
                 if (current.getNext() == null) {
                     LOGGER.warning("Collision: Object already exists in the Bucket");
+                    LOGGER.info("Adding new Object to the Bucket");
                     current.setNext(node);
+                    break;
                 }
                 current = current.getNext();
             }
