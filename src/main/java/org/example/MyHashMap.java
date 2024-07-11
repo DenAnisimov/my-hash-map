@@ -45,7 +45,7 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
         } else {
             h = key.hashCode();
             h = h ^ (h >>> 16);
-
+            LOGGER.info("Bucket was calculated for the Object: " + h);
             return h;
         }
     }
@@ -108,7 +108,7 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
      */
     public V get(K key) {
         LOGGER.info("Method get worked");
-        int h = hash(key);
+        int h = index(hash(key));
         MyNode<K, V> node = table[h];
         while (node != null) {
             if (key.equals(node.getKey())) {
@@ -132,7 +132,7 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
         for (MyNode<K, V> node : table) {
             while (node != null) {
                 MyNode<K, V> next = node.getNext();
-                int hash = hash(node.getKey());
+                int hash = index(hash(node.getKey()));
 
                 node.setNext(newTable[hash]);
                 newTable[hash] = node;
