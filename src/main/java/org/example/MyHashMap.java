@@ -2,9 +2,14 @@ package org.example;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+/**
+ * Простая реализация структуры данных хеш-таблица.
+ *
+ * @param <K> ключ.
+ * @param <V> значение.
+ */
 public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
     private final static Logger LOGGER = Logger.getLogger(MyHashMap.class.getName());
 
@@ -15,6 +20,9 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
     private int size;
     private int threshold;
 
+    /**
+     * Создает пустую MyHashMap с начальной емкостью по умолчанию (16) и коэффициентом загрузки (0,75).
+     */
     public MyHashMap() {
         LOGGER.info("HashMap was created");
 
@@ -22,6 +30,12 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
         this.threshold = (int) (CAPACITY * LOAD_FACTOR);
     }
 
+    /**
+     * Вычисляет хеш-код для указанного ключа.
+     *
+     * @param key ключ
+     * @return хеш-код для указанного ключа
+     */
     private int hash(Object key) {
         LOGGER.info("Method hash worked");
 
@@ -32,18 +46,31 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
             h = key.hashCode();
             h = h ^ (h >>> 16);
 
-            h = h & table.length - 1;
-
-            LOGGER.info("Bucket was calculated for the Object: " + h);
-
             return h;
         }
     }
 
+    /**
+     * Вычисляет бакет для объекта
+     *
+     * @param h хеш-код объекта
+     * @return индекс для объекта
+     */
+    private int index(int h) {
+        LOGGER.info("Bucket was calculated for the Object: " + h);
+        return h & table.length - 1;
+    }
+
+    /**
+     * Связывает указанное значение с указанным ключом в этой карте.
+     *
+     * @param key   ключ, с которым должно быть связано указанное значение
+     * @param value значение, которое должно быть связано с указанным ключом
+     */
     public void put(K key, V value) {
         LOGGER.info("Method put worked");
 
-        int h = hash(key);
+        int h = index(hash(key));
         MyNode<K, V> node = new MyNode<>(key, value);
 
         if (table[h] == null) {
@@ -73,6 +100,12 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
         }
     }
 
+    /**
+     * Возвращает значение, с которым связано указанное ключ, или {@code null}, если эта карта не содержит сопоставления для ключа.
+     *
+     * @param key ключ, значение которого необходимо вернуть
+     * @return значение, с которым связано указанное ключ, или {@code null}, если эта карта не содержит сопоставления для ключа
+     */
     public V get(K key) {
         LOGGER.info("Method get worked");
         int h = hash(key);
@@ -87,6 +120,9 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
         return null;
     }
 
+    /**
+     * Изменяет размер хеш-таблицы, когда количество элементов превышает пороговое значение.
+     */
     private void resize() {
         LOGGER.info("Method resize worked");
         int newCapacity = table.length * 2;
@@ -108,15 +144,28 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
         table = newTable;
     }
 
+    /**
+     * Возвращает количество сопоставлений ключ-значение в этой карте.
+     *
+     * @return количество сопоставлений ключ-значение в этой карте
+     */
     public int size() {
         return size;
     }
 
+    /**
+     * Возвращает итератор по элементам типа {@code MyNode<K, V>}.
+     *
+     * @return итератор
+     */
     @Override
     public Iterator<MyNode<K, V>> iterator() {
         return new MyHashMapIterator();
     }
 
+    /**
+     * Итератор по хеш-таблице.
+     */
     private class MyHashMapIterator implements Iterator<MyNode<K, V>> {
         private int bucketIndex = 0;
         private MyNode<K, V> currentNode = null;
@@ -125,17 +174,31 @@ public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
             advanceToNextNonEmptyBucket();
         }
 
+        /**
+         * Переходит к следующему непустому бакету.
+         */
         private void advanceToNextNonEmptyBucket() {
             while (bucketIndex < table.length && (currentNode == null)) {
                 currentNode = table[bucketIndex++];
             }
         }
 
+        /**
+         * Возвращает {@code true}, если итерация имеет больше элементов.
+         *
+         * @return {@code true}, если итерация имеет больше элементов
+         */
         @Override
         public boolean hasNext() {
             return currentNode != null;
         }
 
+        /**
+         * Возвращает следующий элемент в итерации.
+         *
+         * @return следующий элемент в итерации
+         * @throws NoSuchElementException если в итерации больше нет элементов
+         */
         @Override
         public MyNode<K, V> next() {
             if (currentNode == null) {
