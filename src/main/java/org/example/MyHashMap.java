@@ -1,8 +1,11 @@
 package org.example;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-public class MyHashMap<K, V> {
+public class MyHashMap<K, V> implements Iterable<MyNode<K, V>> {
     private final static Logger LOGGER = Logger.getLogger(MyHashMap.class.getName());
 
     private final int CAPACITY = 16;
@@ -107,5 +110,43 @@ public class MyHashMap<K, V> {
 
     public int size() {
         return size;
+    }
+
+    @Override
+    public Iterator<MyNode<K, V>> iterator() {
+        return new MyHashMapIterator();
+    }
+
+    private class MyHashMapIterator implements Iterator<MyNode<K, V>> {
+        private int bucketIndex = 0;
+        private MyNode<K, V> currentNode = null;
+
+        public MyHashMapIterator() {
+            advanceToNextNonEmptyBucket();
+        }
+
+        private void advanceToNextNonEmptyBucket() {
+            while (bucketIndex < table.length && (currentNode == null)) {
+                currentNode = table[bucketIndex++];
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentNode != null;
+        }
+
+        @Override
+        public MyNode<K, V> next() {
+            if (currentNode == null) {
+                throw new NoSuchElementException();
+            }
+            MyNode<K, V> node = currentNode;
+            currentNode = currentNode.getNext();
+            if (currentNode == null) {
+                advanceToNextNonEmptyBucket();
+            }
+            return node;
+        }
     }
 }
