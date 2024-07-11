@@ -19,6 +19,9 @@ public class Main {
         myHashMap.put("n", 14);
         myHashMap.put("o", 15);
         myHashMap.put("p", 16);
-        System.out.println(myHashMap.get("a"));
+
+        for (MyNode<String, Integer> node : myHashMap) {
+            System.out.println(node.getKey() + " " + node.getValue());
+        }
     }
 }
